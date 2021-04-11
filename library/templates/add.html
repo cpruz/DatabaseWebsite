@@ -1,25 +1,90 @@
 {% extends "layout.html" %}
 {% block content %}
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Employee</title>
+    <title>Add Book</title>
 </head>
 <body>
-    <h2>Employee Information</h2>
+    <h2>Book Information</h2>
     <form action="/savedetails" method="post">
         <table>
             <tr>
-                <td>Name</td>
-                <td><input type="text" name="name"></td>
+                <nav class="navbar navbar-light bg-light">
+                    <form class="form-inline">
+                      <div class="input-group">
+                        <input type="text" name="title" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1">
+                      </div>
+                    </form>
+                  </nav>
             </tr>
             <tr>
-                <td>Email</td>
-                <td><input type="email" name="email"></td>
+                <nav class="navbar navbar-light bg-light">
+                    <form class="form-inline">
+                      <div class="input-group">
+                        <input type="number" name="length" class="form-control" placeholder="Length" aria-label="Length" aria-describedby="basic-addon1">
+                      </div>
+                    </form>
+                  </nav>
             </tr>
             <tr>
-                <td>Address</td>
-                <td><input type="text" name="address"></td>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="availability" value="0">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Checked Out
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="availability" value="1" checked>
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Available
+                    </label>
+                </div>
+            </tr>
+            <tr>
+                <nav class="navbar navbar-light bg-light">
+                    <form class="form-inline">
+                      <button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
+                    </form>
+                </nav>
+            </tr>
+        </table>
+    </form>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Book</title>
+</head>
+
+<body>
+    <h2>Book List</h2>
+    <form action="/savedetails" method="post">
+        <table>
+            <tr>
+                <td>Title</td>
+                <td><input type="text" name="title"></td>
+            </tr>
+            <tr>
+                <td>Length</td>
+                <td><input type="number" name="length"></td>
+            </tr>
+            <tr>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="availability" value="0">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Checked Out
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="availability" value="1" checked>
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Available
+                    </label>
+                </div>
             </tr>
             <tr>
                 <td><input type="submit" value="Submit"></td>
@@ -27,5 +92,6 @@
         </table>
     </form>
 </body>
+
 </html>
 {% endblock content %}

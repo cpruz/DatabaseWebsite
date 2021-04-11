@@ -5,11 +5,14 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from library import app, db
 
+# con = sqlite3.connect("book.db")  
+# print("Database opened successfully")  
+# con.execute("create table Books (bookId INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, length INTEGER NOT NULL, availability BOOLEAN NOT NULL CHECK(availability IN (0, 1)))")  
+# print("Table created successfully") 
 
 @app.route("/")
 @app.route("/home")
 def home():
-    #posts = Post.query.all()
     return render_template('home.html', title='Home')
 
 
@@ -23,30 +26,30 @@ def add():
 
 @app.route("/savedetails",methods = ["POST","GET"])  
 def saveDetails():  
-    msg = "msg" 
+    msg = "Did not attempt" 
     if request.method == "POST":  
         try:  
-            name = request.form["name"]  
-            email = request.form["email"]  
-            address = request.form["address"]  
-            with sqlite3.connect("employee.db") as con:  
+            title = request.form["title"]  
+            length = request.form["length"]  
+            availability = request.form["availability"]  
+            with sqlite3.connect("book.db") as con:  
                 cur = con.cursor()  
-                cur.execute("INSERT into Employees (name, email, address) values (?,?,?)",(name,email,address))  
+                cur.execute("INSERT into Books (title, length, availability) values (?,?,?)",(title,length,availability))  
                 con.commit()  
-                msg = "Employee successfully Added" 
+                msg = "Book successfully Added" 
         except:  
             con.rollback()  
-            msg = "We can not add the employee to the list" 
+            msg = "We can not add the book to the list" 
         finally:  
             return render_template("success.html",msg = msg)  
             con.close() 
 
 @app.route("/view")  
 def view():  
-    con = sqlite3.connect("employee.db")  
+    con = sqlite3.connect("book.db")  
     con.row_factory = sqlite3.Row  
     cur = con.cursor()  
-    cur.execute("select * from Employees")  
+    cur.execute("select * from Books")  
     rows = cur.fetchall()  
     return render_template("view.html",rows = rows) 
 
@@ -56,11 +59,11 @@ def delete():
 
 @app.route("/deleterecord",methods = ["POST"])  
 def deleterecord():  
-    id = request.form["id"]  
-    with sqlite3.connect("employee.db") as con:  
+    bookId = request.form["bookId"]  
+    with sqlite3.connect("book.db") as con:  
         try:  
             cur = con.cursor()  
-            cur.execute("delete from Employees where id = ?",id)  
+            cur.execute("delete from Books where bookId = ?",bookId)  
             msg = "record successfully deleted" 
         except:  
             msg = "can't be deleted" 
