@@ -2,9 +2,20 @@
 {% block content %}
     <h1>Home Page</h1>
     <body>
+    <div class="container">
         <h2>For Staff:</h2>  
     <a href="/add">Add Book</a><br><br>  
     <a href="/delete">Delete Book</a><br><br>
-    <a href ="/view">Book List</a><br><br>  
+    <a href ="/addmember">Add Member</a><br><br>  
+    <a href ="/deletemember">Delete Member</a><br><br>  
+    <a href ="/checkin">Checkin Book</a><br><br>  
+    </div>
+    <div class="container">
+        <h2>For Members:</h2>  
+    <a href="/searchbook">Search for Book</a><br><br>  
+    <a href="/searchbookauthor">Search for Book by Author</a><br><br>
+    <a href ="/searchbookpublisher">Search for Book by Publisher</a><br><br>  
+    <a href ="/searchbookgenre">Search for Book by Genre</a><br><br>   
+    </div>
     </body>
 {% endblock content %}

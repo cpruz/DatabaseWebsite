@@ -61,17 +61,11 @@
 </head>
 
 <body>
-    <h2>Book List</h2>
+    <h2>Add Book</h2>
     <form action="/savedetails" method="post">
         <table>
-            <tr>
-                <td>Title</td>
-                <td><input type="text" name="title"></td>
-            </tr>
-            <tr>
-                <td>Length</td>
-                <td><input type="number" name="length"></td>
-            </tr>
+                <input type="text" name="title" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1">
+                <input type="number" name="length" class="form-control" placeholder="Length" aria-label="Length" aria-describedby="basic-addon1">
             <tr>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="availability" value="0">
@@ -87,10 +81,11 @@
                 </div>
             </tr>
             <tr>
-                <td><input type="submit" value="Submit"></td>
+                <td><button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button></td>
             </tr>
         </table>
     </form>
+    <a href="/">Go back to home page</a>
 </body>
 
 </html>

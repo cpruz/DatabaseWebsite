@@ -11,7 +11,7 @@
         <nav class="navbar navbar-light bg-light">
             <form class="form-inline">
               <div class="input-group">
-                <input type="text" name="id" class="form-control" placeholder="BookID" aria-label="Length" aria-describedby="basic-addon1">
+                <input type="text" name="bookId" class="form-control" placeholder="BookID" aria-label="Length" aria-describedby="basic-addon1">
               </div>
             </form>
           </nav>
@@ -25,13 +25,12 @@
     <title>delete book</title>  
 </head>  
 <body>  
-   
     <h3>Remove Book from the list</h3>  
-   
 <form action="/deleterecord" method="post">  
-Book Id <input type="text" name="bookId">  
-<input type="submit" value="Submit">  
+<input type="text" name="bookId" class="form-control" placeholder="BookID" aria-label="Length" aria-describedby="basic-addon1"> 
+<button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
 </form>  
+<a href="/">Go back to home page</a>
 </body>  
 </html>
 {% endblock content %}

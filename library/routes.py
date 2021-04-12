@@ -69,3 +69,43 @@ def deleterecord():
             msg = "can't be deleted" 
         finally:  
             return render_template("delete_record.html",msg = msg)
+
+@app.route("/addmember")  
+def add_member():  
+    return render_template("add_member.html")
+
+@app.route("/deletemember")  
+def delete_member():  
+    return render_template("delete_member.html")
+
+@app.route("/checkin")  
+def checkin():  
+    return render_template("checkin.html")
+
+@app.route("/searchbook")  
+def search_book():  
+    return render_template("search_book.html")
+
+@app.route("/searchbookauthor")  
+def search_book_author():  
+    return render_template("search_book_author.html")
+
+@app.route("/searchbookpublisher")  
+def search_book_publisher():  
+    return render_template("search_book_publisher.html")
+
+@app.route("/searchbookgenre")  
+def search_book_genre():  
+    return render_template("search_book_genre.html")
+
+@app.route("/viewauthors")  
+def view_authors():  
+    return render_template("view_authors.html")
+
+@app.route("/viewpublishers")  
+def view_publishers():  
+    return render_template("view_publishers.html")
+
+@app.route("/viewmembers")  
+def view_members():  
+    return render_template("view_members.html")
