@@ -1,4 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Add Member Page</h1>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Member</title>
+</head>
+
+<body>
+    <h2>Add Member</h2>
+    <form action="/savememberdetails" method="post">
+        <table>
+                <input type="text" name="firstName" class="form-control" placeholder="First Name" aria-label="First Name" aria-describedby="basic-addon1">
+                <input type="text" name="lastName" class="form-control" placeholder="Last Name" aria-label="Last Name" aria-describedby="basic-addon1">
+                <input type="date" name="birthday" class="form-control" placeholder="Birthday" aria-label="Birthday" aria-describedby="basic-addon1">
+                <input type="text" name="phoneNumber" class="form-control" placeholder="Phone Number" aria-label="Phone Number" aria-describedby="basic-addon1">
+            <tr>
+                <td><button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+    <a href="/">Go back to home page</a>
+</body>
+
+</html>
 {% endblock content %}
