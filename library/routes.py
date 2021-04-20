@@ -31,10 +31,12 @@ from library import app, author, book, member, publisher, queries
 # CONSTRAINT fk_book_borrowed FOREIGN KEY(bookId) REFERENCES Book(bookId), CONSTRAINT fk_member_borrowed FOREIGN KEY(memberId) REFERENCES Member(memberId))")  
 # print("Table created successfully")
 
-# 1. Test what you already have for adding a book
-# 2. Set up the new format with add member
-# 3. Complete the Author and Publisher listing pages
-# 3. Reinstall all of the tables with the correct attributes so you can finish the queries
+# 1. Fix this books listing page to show the books join author join publishers
+# 2. Be able to check out a book as a member
+# 3. Add the ability to checkin a book
+# 4. Check that you can add books with the same author/publisher
+# 5. Complete the search functions
+# 6. Add links in all the view pages to search them in different ways
 @app.route("/")
 @app.route("/home")
 def home():
@@ -51,10 +53,9 @@ def add():
 
 @app.route("/savedetails",methods = ["POST","GET"])  
 def saveDetails():  
-    global db 
-    db = queries.queries
-    db.connect() 
     msg = "Did not attempt"
+    db = queries.queries
+    db.connect()
     if request.method == "POST":  
         global bookAdded
         bookAdded = book.book(request.form["title"], request.form["length"], request.form["availability"])
@@ -70,43 +71,46 @@ def saveDetails():
                 db.makeBookId(bookAdded)
             except:
                 msg = "Could not add book"
-            if(db.checkAuthor(authorAdded) == False):
-                try:
-                    db.addAuthor(authorAdded)
-                    db.makeAuthorId(authorAdded)
-                    db.addWrittenBy(bookAdded, authorAdded)
-                except:
-                    msg = "Data not valid for author"
+        if(db.checkAuthor(authorAdded) == False):
+            try:
+                db.addAuthor(authorAdded)
+                db.makeAuthorId(authorAdded)
+            except:
+                msg = "Author already exists"
+        try:
+            db.addWrittenBy(bookAdded, authorAdded)
+        except:
+            msg = "This book already exists: author"
         if(db.checkPublisher(publisherAdded) == False):
             try:
                 db.addPublisher(publisherAdded)
                 db.makePublisherId(publisherAdded)
-                db.addPublishedBy(bookAdded, publisherAdded, datePublished)
             except:
                 msg = "Publisher could not be added"
+        if(db.alreadyPublished(bookAdded, publisherAdded) == False):
+            try:
+                db.addPublishedBy(bookAdded, publisherAdded, datePublished)
+            except:
+                msg = "This book already exists: publisher"
         msg = "Book Successfully Added"  
         return render_template("success.html",msg = msg)  
 
 @app.route("/savememberdetails",methods = ["POST","GET"])  
 def saveMemberDetails():  
     msg = "Did not attempt" 
-    if request.method == "POST":  
-        try:  
-            firstName = request.form["firstName"]  
-            lastName = request.form["lastName"]  
-            birthday = request.form["birthday"]  
-            phoneNumber = request.form["phoneNumber"]
-            with sqlite3.connect("book.db") as con:  
-                cur = con.cursor()  
-                cur.execute("INSERT into Member (firstName, lastName, birthday, phoneNumber) values (?,?,?,?)",(firstName,lastName,birthday,phoneNumber))  
-                con.commit()  
-                msg = "Member Successfully Added" 
-        except:  
-            con.rollback()  
-            msg = "We can not add the member to the list" 
-        finally:  
-            return render_template("member_success.html",msg = msg)  
-            con.close() 
+    db = queries.queries
+    db.connect()
+    if request.method == "POST": 
+        global memberAdded
+        memberAdded = member.member(request.form["firstName"], request.form["lastName"], request.form["birthday"], request.form["phoneNumber"]) 
+        if(db.checkMember(memberAdded) == False):
+            try:  
+                db.addMember(memberAdded)
+                db.makeMemberId(memberAdded)
+            except:   
+                msg = "We can not add the member to the list" 
+        msg = "Member successfully added" 
+    return render_template("member_success.html",msg = msg)   
 
 @app.route("/view")  
 def view():  
@@ -125,6 +129,24 @@ def viewMember():
     cur.execute("select * from Member")  
     rows = cur.fetchall()  
     return render_template("view_members.html",rows = rows) 
+
+@app.route("/viewauthor")  
+def viewAuthor():  
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("select * from Author")  
+    rows = cur.fetchall()  
+    return render_template("view_authors.html",rows = rows)
+
+@app.route("/viewpublisher")  
+def viewPublisher():  
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("select * from Publisher")  
+    rows = cur.fetchall() 
+    return render_template("view_publishers.html",rows = rows)
 
 @app.route("/delete")  
 def delete():  
@@ -171,10 +193,3 @@ def search_book_publisher():
 def search_book_genre():  
     return render_template("search_book_genre.html")
 
-@app.route("/viewauthors")  
-def view_authors():  
-    return render_template("view_authors.html")
-
-@app.route("/viewpublishers")  
-def view_publishers():  
-    return render_template("view_publishers.html")

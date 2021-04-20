@@ -41,7 +41,7 @@ class queries:
 
     def addAuthor(author):
         cur = con.cursor()
-        info = [author.getFirstName(), book.getLastName()]
+        info = [author.getFirstName(), author.getLastName()]
         cur.execute("INSERT into Author (firstName, lastName) values (?,?)",(info))
         con.commit()
 
@@ -89,8 +89,8 @@ class queries:
 
     def addMember(member):
         cur = con.cursor()
-        info = [member.getMemberFirstName(), member.getMemberLastName()]
-        cur.execute("INSERT into Member (firstName, lastName) values (?,?)",(info))
+        info = [member.getMemberFirstName(), member.getMemberLastName(), member.getBirthday(), member.getPhoneNumber()]
+        cur.execute("INSERT into Member (firstName, lastName, birthday, phoneNumber) values (?,?,?,?)",(info))
         con.commit()
 
     def makeMemberId(publisher):
@@ -99,22 +99,70 @@ class queries:
             {"fname": member.getMemberFirstName(), "lname": member.getMemberLastName()})
         data = cur.fetchall()
         for d in data:
-            publisher.setPublisherId(d[0])
+            member.setMemberId(d[0])
+
+    def checkMember(member):
+        cur = con.cursor()
+        cur.execute('Select count(*) FROM Member WHERE memberId =:num', {"num": member.getMemberId()})
+        check = cur.fetchall()
+        for c in check:
+            valid = c[0]
+        if valid == 1:
+            return True
+        else:
+            return False
 
     def addWrittenBy(book, author):
         cur = con.cursor()
         info = [book.getBookId(), author.getAuthorId()]
-        cur.execute('INSERT INTO WrittenBy (bookId, authorId) values (?,?)', info)
+        cur.execute('INSERT into WrittenBy (bookId, authorId) values (?,?)', info)
         con.commit()
+
+    def alreadyWritten(book, author):
+        cur = con.cursor()
+        cur.execute('SELECT count(*) FROM WrittenBy WHERE bookId=:first AND authorId =:second',\
+             {"first": book.getBookId(), "second": author.getAuthorId()})
+        check = cur.fetchall()
+        for c in check:
+            valid = c[0]
+        if valid == 1:
+            return True
+        else:
+            print("in else in queries")
+            return False
 
     def addPublishedBy(book, publisher, datePublished):
         cur = con.cursor()
-        info = [book.getBookId(), publisher.getPublisherId()]
-        cur.execute('INSERT INTO PublishedBy (bookId, publisherId, datePublished) values (?,?,?)', info, datePublished)
+        info = [book.getBookId(), publisher.getPublisherId(), datePublished]
+        cur.execute('INSERT into PublishedBy (bookId, publisherId, datePublished) values (?,?,?)', info)
         con.commit()
+
+    def alreadyPublished(book, publisher):
+        cur = con.cursor()
+        cur.execute('SELECT count(*) FROM PublishedBy WHERE bookId=:first AND publisherId =:second',\
+             {"first": book.getBookId(), "second": publisher.getPublisherId()})
+        check = cur.fetchall()
+        for c in check:
+            valid = c[0]
+        if valid == 1:
+            return True
+        else:
+            return False
 
     def addBorrowedBy(book, member, issueDate):
         cur = con.cursor()
-        info = [book.getBookId(), member.getMemberId()]
-        cur.execute('INSERT INTO BorrowedBy (bookId, memberId, issueDate) values (?,?,?)', info, issueDate)
+        info = [book.getBookId(), member.getMemberId(), issueDate]
+        cur.execute('INSERT into BorrowedBy (bookId, memberId, issueDate) values (?,?,?)', info)
         con.commit()
+
+    def alreadyBorrowed(book, member):
+        cur = con.cursor()
+        cur.execute('SELECT count(*) FROM BorrowedBy WHERE bookId=:first AND memberId =:second',\
+             {"first": book.getBookId(), "second": member.getMemberId()})
+        check = cur.fetchall()
+        for c in check:
+            valid = c[0]
+        if valid == 1:
+            return True
+        else:
+            return False

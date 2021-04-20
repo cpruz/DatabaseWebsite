@@ -14,5 +14,5 @@ class author:
     def getAuthorId(self):
         return self.authorId
 
-    def setAuthorId(self, authorIdId):
+    def setAuthorId(self, authorId):
         self.authorId = authorId

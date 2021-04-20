@@ -19,7 +19,7 @@ class member:
     def getPhoneNumber(self):
         return self.phoneNumber
 
-    def getMemberId(self, memberId):
+    def getMemberId(self):
         return self.memberId
 
     def setMemberId(self, memberId):

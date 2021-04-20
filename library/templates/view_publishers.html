@@ -1,4 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Publisher List</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List</title>
+</head>
+<body>
+    <h3>Publisher List</h3>
+    <table border=5>
+        <thead>
+            <td>Publisher ID</td>
+            <td>Name</td>
+            <td>Address</td>
+        </thead>
+        {% for row in rows %}
+        <tr>
+            <td>{{row["publisherId"]}}</td>
+            <td>{{row["name"]}}</td>
+            <td>{{row["address"]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br><br>
+    <a href="/">Go back to home page</a>
+</body>
+</html>
 {% endblock content %}
