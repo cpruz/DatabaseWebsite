@@ -2,12 +2,13 @@
 {% block content %}
 <html>  
 <head>  
-    <title>Checkin Book</title>  
+    <title>Checkout Book</title>  
 </head>  
 <body>  
-    <h3>Checkin Book</h3>  
-<form action="/checkinbook" method="post">  
+    <h3>Checkout Book</h3>  
+<form action="/checkoutbook" method="post">  
 <input type="text" name="bookId" class="form-control" placeholder="BookId" aria-label="BookId" aria-describedby="basic-addon1"> 
+<input type="text" name="memberId" class="form-control" placeholder="MemberId" aria-label="MemberId" aria-describedby="basic-addon1"> 
 <button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
 </form>  
 <a href="/">Go back to home page</a>

@@ -6,16 +6,16 @@
     <title>List</title>
 </head>
 <body>
-    <h3>Book List</h3>
+    <h3>Borrowed Book List</h3>
     <table border=5>
         <thead>
             <td>Book ID</td>
             <td>Title</td>
             <td>Length</td>
             <td>Availability</td>
-            <td>Author's First Name</td>
-            <td>Author's Last Name</td>
-            <td>Publisher</td>
+            <td>Member ID</td>
+            <td>Member's First Name</td>
+            <td>Member's Last Name</td>
         </thead>
         {% for row in rows %}
         <tr>
@@ -23,9 +23,9 @@
             <td>{{row["title"]}}</td>
             <td>{{row["length"]}}</td>
             <td>{{row["availability"]}}</td>
+            <td>{{row["memberId"]}}</td>
             <td>{{row["firstName"]}}</td>
             <td>{{row["lastName"]}}</td>
-            <td>{{row["name"]}}</td>
         </tr>
         {% endfor %}
     </table>

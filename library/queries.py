@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime, date, timezone
 
 class queries:
 
@@ -8,7 +9,7 @@ class queries:
     def connect():
         global con 
         try:
-            con = sqlite3.connect("book.db")
+            con = sqlite3.connect("book.db", detect_types=sqlite3.PARSE_DECLTYPES)
         except:
             print("Could no connect")
 
@@ -149,16 +150,23 @@ class queries:
         else:
             return False
 
-    def addBorrowedBy(book, member, issueDate):
+    def addBorrowedBy(bookId, memberId):
         cur = con.cursor()
-        info = [book.getBookId(), member.getMemberId(), issueDate]
+        mydate = date.today()
+        info = [bookId, memberId, mydate]
         cur.execute('INSERT into BorrowedBy (bookId, memberId, issueDate) values (?,?,?)', info)
         con.commit()
 
-    def alreadyBorrowed(book, member):
+    def removeBorrowedBy(bookId):
         cur = con.cursor()
-        cur.execute('SELECT count(*) FROM BorrowedBy WHERE bookId=:first AND memberId =:second',\
-             {"first": book.getBookId(), "second": member.getMemberId()})
+        info = [bookId]
+        cur.execute('DELETE from BorrowedBy WHERE bookId=:first', info)
+        con.commit()
+
+    def alreadyBorrowed(bookId):
+        cur = con.cursor()
+        cur.execute('SELECT count(*) FROM BorrowedBy WHERE bookId=:first',\
+             {"first": bookId})
         check = cur.fetchall()
         for c in check:
             valid = c[0]
@@ -166,3 +174,18 @@ class queries:
             return True
         else:
             return False
+
+    def deleteBook(bookId):
+        cur = con.cursor()
+        cur.execute("DELETE FROM Book WHERE bookId = ?",bookId)
+        con.commit()
+
+    def checkoutBook(bookId):
+        cur = con.cursor()
+        cur.execute('UPDATE Book SET availability = 0 WHERE bookId=:first', {"first": bookId})
+        con.commit()
+
+    def checkinBook(bookId):
+        cur = con.cursor()
+        cur.execute('UPDATE Book SET availability = 1 WHERE bookId=:first', {"first": bookId})
+        con.commit()

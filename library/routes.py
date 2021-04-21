@@ -22,21 +22,21 @@ from library import app, author, book, member, publisher, queries
 #     birthday DATE NOT NULL, phoneNumber VARCHAR(15) NOT NULL)")  
 # print("Table created successfully")
 # con.execute("create table WrittenBy (bookId INTEGER NOT NULL, authorId INTEGER NOT NULL, \
-# CONSTRAINT fk_book_written FOREIGN KEY(bookId) REFERENCES Book(bookId), CONSTRAINT fk_author_written FOREIGN KEY(authorId) REFERENCES Author(authorId))")  
+# CONSTRAINT fk_book_written FOREIGN KEY(bookId) REFERENCES Book(bookId) ON DELETE CASCADE, \
+# CONSTRAINT fk_author_written FOREIGN KEY(authorId) REFERENCES Author(authorId) ON DELETE CASCADE)")  
 # print("Table created successfully")
 # con.execute("create table PublishedBy (bookId INTEGER NOT NULL, publisherId INTEGER NOT NULL, datePublished DATE NOT NULL,\
-# CONSTRAINT fk_book FOREIGN KEY(bookId) REFERENCES Book(bookId), CONSTRAINT fk_publisher FOREIGN KEY(publisherId) REFERENCES Publisher(publisherId))")  
+# CONSTRAINT fk_book FOREIGN KEY(bookId) REFERENCES Book(bookId) ON DELETE CASCADE, CONSTRAINT fk_publisher FOREIGN KEY(publisherId) \
+# REFERENCES Publisher(publisherId) ON DELETE CASCADE)")  
 # print("Table created successfully")
 # con.execute("create table BorrowedBy (bookId INTEGER NOT NULL, memberId INTEGER NOT NULL, issueDate DATE NOT NULL,\
-# CONSTRAINT fk_book_borrowed FOREIGN KEY(bookId) REFERENCES Book(bookId), CONSTRAINT fk_member_borrowed FOREIGN KEY(memberId) REFERENCES Member(memberId))")  
+# CONSTRAINT fk_book_borrowed FOREIGN KEY(bookId) REFERENCES Book(bookId) ON DELETE CASCADE, \
+# CONSTRAINT fk_member_borrowed FOREIGN KEY(memberId) REFERENCES Member(memberId) ON DELETE CASCADE)")  
 # print("Table created successfully")
 
-# 1. Fix this books listing page to show the books join author join publishers
-# 2. Be able to check out a book as a member
-# 3. Add the ability to checkin a book
-# 4. Check that you can add books with the same author/publisher
-# 5. Complete the search functions
-# 6. Add links in all the view pages to search them in different ways
+# 1. Check that you can add books with the same author/publisher
+# 2. Complete the search functions
+# 3. Add links in all the view pages to search them in different ways
 @app.route("/")
 @app.route("/home")
 def home():
@@ -117,7 +117,12 @@ def view():
     con = sqlite3.connect("book.db")  
     con.row_factory = sqlite3.Row  
     cur = con.cursor()  
-    cur.execute("select * from Book")  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Author.firstName, Author.lastName, Publisher.name\
+    FROM Author JOIN WrittenBy JOIN Book JOIN PublishedBy JOIN Publisher\
+    ON Book.bookId = WrittenBy.bookId\
+    AND WrittenBy.authorId = Author.authorId\
+    AND Book.bookId = PublishedBy.bookId\
+    AND PublishedBy.publisherId = Publisher.publisherId")  
     rows = cur.fetchall()  
     return render_template("view.html",rows = rows) 
 
@@ -152,18 +157,18 @@ def viewPublisher():
 def delete():  
     return render_template("delete.html") 
 
-@app.route("/deleterecord",methods = ["POST"])  
-def deleterecord():  
-    bookId = request.form["bookId"]  
-    with sqlite3.connect("book.db") as con:  
+@app.route("/deleterecord",methods = ["POST", "GET"])  
+def deleterecord():
+    db = queries.queries
+    db.connect()
+    if request.method == "POST":   
+        bookId = request.form["bookId"]   
         try:  
-            cur = con.cursor()  
-            cur.execute("delete from Book where bookId = ?",bookId)  
-            msg = "record successfully deleted" 
+            db.deleteBook(bookId)
+            msg = "Book successfully deleted" 
         except:  
-            msg = "can't be deleted" 
-        finally:  
-            return render_template("delete_record.html",msg = msg)
+            msg = "Book can't be deleted" 
+    return render_template("delete_record.html",msg = msg)
 
 @app.route("/addmember")  
 def add_member():  
@@ -176,6 +181,57 @@ def delete_member():
 @app.route("/checkin")  
 def checkin():  
     return render_template("checkin.html")
+
+@app.route("/checkinbook",methods = ["POST", "GET"])  
+def checkinBook():  
+    db = queries.queries
+    db.connect()  
+    bookId = request.form["bookId"]
+    if(db.alreadyBorrowed(bookId) == True):
+        try:
+            db.removeBorrowedBy(bookId)
+        except:
+            msg = "This book is not checked out"
+    try:
+        db.checkinBook(bookId)
+        msg = "Book successfully checkedin"
+    except:
+        msg = "Book could not be checked in"
+    return render_template("checkin_book.html", msg = msg)
+
+@app.route("/checkout")  
+def checkout():  
+    return render_template("checkout.html")
+
+@app.route("/checkoutbook",methods = ["POST", "GET"])  
+def checkoutBook():  
+    db = queries.queries
+    db.connect()  
+    bookId = request.form["bookId"]
+    memberId = request.form["memberId"]
+    if(db.alreadyBorrowed(bookId) == False):
+        try:
+            db.addBorrowedBy(bookId, memberId)
+        except:
+            msg = "The book could not be borrowed"
+    try:
+        db.checkoutBook(bookId)
+        msg = "Book successfully checkedout"
+    except:
+        msg = "Book could not be checked out"
+    return render_template("checkout_book.html", msg = msg)
+
+@app.route("/checkedoutlist")
+def borrowedBooks():  
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Member.memberId, Member.firstName, Member.lastName\
+    FROM Book JOIN BorrowedBy JOIN Member\
+    ON Book.bookId = BorrowedBy.bookId\
+    AND BorrowedBy.memberId = Member.memberId")  
+    rows = cur.fetchall()  
+    return render_template("borrowed_books.html", rows = rows)
 
 @app.route("/searchbook")  
 def search_book():  
