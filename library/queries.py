@@ -40,6 +40,21 @@ class queries:
         else:
             return False
 
+    def updateBookTitle(bookId, title):
+        cur = con.cursor()
+        cur.execute("UPDATE Book SET title = :val WHERE bookId = :id", {"val": title, "id": bookId})
+        con.commit()
+        
+    def updateBookLength(bookId, length):
+        cur = con.cursor()
+        cur.execute("UPDATE Book SET length = :val WHERE bookId = :id", {"val": length, "id": bookId})
+        con.commit()
+
+    def updateMember(memberId, phoneNumber):
+        cur = con.cursor()
+        cur.execute("UPDATE Member SET phoneNumber = :val WHERE memberId = :id", {"val": phoneNumber, "id": memberId})
+        con.commit()
+
     def addAuthor(author):
         cur = con.cursor()
         info = [author.getFirstName(), author.getLastName()]
@@ -189,3 +204,4 @@ class queries:
         cur = con.cursor()
         cur.execute('UPDATE Book SET availability = 1 WHERE bookId=:first', {"first": bookId})
         con.commit()
+    

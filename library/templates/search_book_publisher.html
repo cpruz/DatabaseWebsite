@@ -1,4 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Search for Book by Publisher</h1>
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>Search for Book by Publisher</title>  
+</head>  
+<body>  
+    <h3>Search for Book by Publisher</h3>  
+<form action="/searchbookpublisherresult" method="post">  
+<input type="text" name="name" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon1"> 
+<button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
+</form>  
+<a href="/">Go back to home page</a>
+</body>  
+</html>
 {% endblock content %}

@@ -1,4 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Search for Book by Author</h1>
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>Search for Book by Author</title>  
+</head>  
+<body>  
+    <h3>Search for Book by Author</h3>  
+<form action="/searchbookauthorresult" method="post">  
+<input type="text" name="firstName" class="form-control" placeholder="First Name" aria-label="First Name" aria-describedby="basic-addon1"> 
+<input type="text" name="lastName" class="form-control" placeholder="Last Name" aria-label="Last Name" aria-describedby="basic-addon1"> 
+<button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
+</form>  
+<a href="/">Go back to home page</a>
+</body>  
+</html>
 {% endblock content %}

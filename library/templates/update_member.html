@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Member</title>
+</head>
+
+<body>
+    <h2>Add Member</h2>
+    <form action="/updatemembernumber" method="post">
+        <table>
+                <tr>Member to Update</tr>
+                <input type="text" name="memberId" class="form-control" placeholder="MemberId" aria-label="MemberId" aria-describedby="basic-addon1">
+                <tr>New Phone Number</tr>
+                <input type="text" name="phoneNumber" class="form-control" placeholder="Phone Number" aria-label="Phone Number" aria-describedby="basic-addon1">
+            <tr>
+                <td><button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+    <a href="/">Go back to home page</a>
+</body>
+
+</html>
+{% endblock content %}

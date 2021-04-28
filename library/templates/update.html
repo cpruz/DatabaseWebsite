@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Update Book</title>
+</head>
+
+<body>
+    <h2>Update Book Title</h2>
+    <form action="/updatebooktitle" method="post">
+        <table>
+                <tr>Book to Update</tr>
+                <input type="text" name="bookId" class="form-control" placeholder="BookId" aria-label="BookId" aria-describedby="basic-addon1">
+                <tr>New Title</tr>
+                <input type="text" name="title" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon1">
+            <tr>
+                <td><button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+    <h2>Update Book Length</h2>
+    <form action="/updatebooklength" method="post">
+        <table>
+                <tr>Book to Update</tr>
+                <input type="text" name="bookId" class="form-control" placeholder="BookId" aria-label="BookId" aria-describedby="basic-addon1">
+                <tr>New Length</tr>
+                <input type="number" name="length" class="form-control" placeholder="Length" aria-label="Length" aria-describedby="basic-addon1">
+            <tr>
+                <td><button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+    <a href="/">Go back to home page</a>
+</body>
+
+</html>
+{% endblock content %}

@@ -35,7 +35,7 @@ from library import app, author, book, member, publisher, queries
 # print("Table created successfully")
 
 # 1. Check that you can add books with the same author/publisher
-# 2. Complete the search functions
+# 2. Add more complex search functions
 # 3. Add links in all the view pages to search them in different ways
 @app.route("/")
 @app.route("/home")
@@ -77,9 +77,13 @@ def saveDetails():
                 db.makeAuthorId(authorAdded)
             except:
                 msg = "Author already exists"
+        else:
+            db.makeAuthorId(authorAdded)
         try:
             db.addWrittenBy(bookAdded, authorAdded)
         except:
+            print(bookAdded.getBookId())
+            print(authorAdded.getAuthorId())
             msg = "This book already exists: author"
         if(db.checkPublisher(publisherAdded) == False):
             try:
@@ -94,6 +98,53 @@ def saveDetails():
                 msg = "This book already exists: publisher"
         msg = "Book Successfully Added"  
         return render_template("success.html",msg = msg)  
+
+@app.route("/update")  
+def update():  
+    return render_template("update.html")
+
+@app.route("/updatebooktitle",methods = ["POST","GET"])  
+def updateBookTitle():  
+    msg = "Did not attempt" 
+    db = queries.queries
+    db.connect()
+    if request.method == "POST": 
+        try:  
+            db.updateBookTitle(request.form['bookId'], request.form['title'])
+        except:   
+            msg = "We can not update the book" 
+        msg = "Book successfully updated" 
+    return render_template("success.html",msg = msg) 
+
+@app.route("/updatebooklength",methods = ["POST","GET"])  
+def updateBookLength():  
+    msg = "Did not attempt" 
+    db = queries.queries
+    db.connect()
+    if request.method == "POST": 
+        try:  
+            db.updateBookLength(request.form['bookId'], request.form['length'])
+        except:  
+            msg = "We can not update the book" 
+        msg = "Book successfully updated" 
+    return render_template("success.html",msg = msg) 
+
+@app.route("/updatemember")  
+def updateMember():  
+    return render_template("update_member.html")
+
+@app.route("/updatemembernumber",methods = ["POST","GET"])  
+def updateMemberNumber():  
+    msg = "Did not attempt" 
+    db = queries.queries
+    db.connect()
+    if request.method == "POST": 
+        try:  
+            db.updateMember(request.form['memberId'], request.form['phoneNumber'])
+        except:   
+            msg = "We can not update the member" 
+        msg = "Member successfully updated" 
+    return render_template("member_success.html",msg = msg) 
 
 @app.route("/savememberdetails",methods = ["POST","GET"])  
 def saveMemberDetails():  
@@ -152,6 +203,45 @@ def viewPublisher():
     cur.execute("select * from Publisher")  
     rows = cur.fetchall() 
     return render_template("view_publishers.html",rows = rows)
+
+@app.route("/popular")  
+def popular():  
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Author.firstName, Author.lastName, count(*) AS numBooks\
+        FROM Author JOIN WrittenBy JOIN Book \
+            ON Author.authorId = WrittenBy.authorId \
+            AND WrittenBy.bookId = Book.bookId \
+        WHERE Book.availability = 0 \
+        GROUP BY Author.authorId, Author.firstName, Author.lastName \
+        HAVING count(*) = (SELECT count(*) \
+                            FROM Author JOIN WrittenBy JOIN Book \
+                                ON Author.authorId = WrittenBy.authorId \
+                                AND WrittenBy.bookId = Book.bookId \
+                            WHERE Book.availability = 0 \
+                            GROUP BY Author.authorId, Author.firstName, Author.lastName \
+                            ORDER BY count(*) DESC \
+                            LIMIT 1)")  
+    rows = cur.fetchall()  
+    return render_template("popular.html",rows = rows)
+
+@app.route("/longest")  
+def longest():  
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Book.title, Book.length, Author.firstName, Author.lastName \
+        FROM Book JOIN WrittenBy JOIN Author \
+            ON Book.bookId = WrittenBy.bookId AND WrittenBy.authorId = Author.authorId \
+        WHERE Book.length > \
+            (SELECT Book.length \
+                FROM Book \
+                ORDER BY Book.length DESC \
+                LIMIT 1 OFFSET 10) \
+        ORDER BY Book.length DESC")  
+    rows = cur.fetchall()  
+    return render_template("longest.html",rows = rows)
 
 @app.route("/delete")  
 def delete():  
@@ -226,26 +316,71 @@ def borrowedBooks():
     con = sqlite3.connect("book.db")  
     con.row_factory = sqlite3.Row  
     cur = con.cursor()  
-    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Member.memberId, Member.firstName, Member.lastName\
-    FROM Book JOIN BorrowedBy JOIN Member\
-    ON Book.bookId = BorrowedBy.bookId\
-    AND BorrowedBy.memberId = Member.memberId")  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, \
+        Member.memberId, Member.firstName, Member.lastName, date(BorrowedBy.issueDate, '+6 months') AS dueDate \
+        FROM Book JOIN BorrowedBy JOIN Member \
+        ON Book.bookId = BorrowedBy.bookId \
+        AND BorrowedBy.memberId = Member.memberId")  
     rows = cur.fetchall()  
     return render_template("borrowed_books.html", rows = rows)
 
 @app.route("/searchbook")  
-def search_book():  
+def searchBook():  
     return render_template("search_book.html")
 
+@app.route("/searchbookresult",methods = ["POST", "GET"])  
+def searchBookResult():  
+    title = request.form["title"]
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Author.firstName, Author.lastName, Publisher.name\
+    FROM Author JOIN WrittenBy JOIN Book JOIN PublishedBy JOIN Publisher\
+    ON Book.bookId = WrittenBy.bookId\
+    AND WrittenBy.authorId = Author.authorId\
+    AND Book.bookId = PublishedBy.bookId\
+    AND PublishedBy.publisherId = Publisher.publisherId\
+    WHERE Book.title=:first", {"first": title})  
+    rows = cur.fetchall()  
+    return render_template("search_book_result.html", rows = rows)
+
 @app.route("/searchbookauthor")  
-def search_book_author():  
+def searchBookAuthor():  
     return render_template("search_book_author.html")
 
+@app.route("/searchbookauthorresult",methods = ["POST", "GET"])  
+def searchBookAuthorResult():  
+    first = request.form["firstName"]
+    last = request.form["lastName"]
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Author.firstName, Author.lastName, Publisher.name\
+    FROM Author JOIN WrittenBy JOIN Book JOIN PublishedBy JOIN Publisher\
+    ON Book.bookId = WrittenBy.bookId\
+    AND WrittenBy.authorId = Author.authorId\
+    AND Book.bookId = PublishedBy.bookId\
+    AND PublishedBy.publisherId = Publisher.publisherId\
+    WHERE Author.firstName=:first AND Author.lastName=:last", {"first": first, "last": last})  
+    rows = cur.fetchall()  
+    return render_template("search_book_author_result.html", rows = rows)
+
 @app.route("/searchbookpublisher")  
-def search_book_publisher():  
+def searchBookPublisher():  
     return render_template("search_book_publisher.html")
 
-@app.route("/searchbookgenre")  
-def search_book_genre():  
-    return render_template("search_book_genre.html")
-
+@app.route("/searchbookpublisherresult",methods = ["POST", "GET"])  
+def searchBookPublisherResult():  
+    name = request.form["name"]
+    con = sqlite3.connect("book.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    cur.execute("SELECT Book.bookId, Book.title, Book.length, Book.availability, Author.firstName, Author.lastName, Publisher.name\
+    FROM Author JOIN WrittenBy JOIN Book JOIN PublishedBy JOIN Publisher\
+    ON Book.bookId = WrittenBy.bookId\
+    AND WrittenBy.authorId = Author.authorId\
+    AND Book.bookId = PublishedBy.bookId\
+    AND PublishedBy.publisherId = Publisher.publisherId\
+    WHERE Publisher.name =:first", {"first": name})  
+    rows = cur.fetchall()  
+    return render_template("search_book_publisher_result.html", rows = rows)
