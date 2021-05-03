@@ -10,6 +10,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from library import app, author, book, member, publisher, queries
 
+# *** Database creation ***
 # con = sqlite3.connect("book.db")  
 # print("Database opened successfully")  
 # con.execute("create table Book (bookId INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, length INTEGER NOT NULL, availability BOOLEAN NOT NULL CHECK(availability IN (0, 1)))")  
@@ -34,9 +35,8 @@ from library import app, author, book, member, publisher, queries
 # CONSTRAINT fk_member_borrowed FOREIGN KEY(memberId) REFERENCES Member(memberId) ON DELETE CASCADE)")  
 # print("Table created successfully")
 
-# 1. Check that you can add books with the same author/publisher
-# 2. Add more complex search functions
-# 3. Add links in all the view pages to search them in different ways
+# 1. Add a README
+# 2. Add real data
 @app.route("/")
 @app.route("/home")
 def home():
@@ -91,11 +91,13 @@ def saveDetails():
                 db.makePublisherId(publisherAdded)
             except:
                 msg = "Publisher could not be added"
-        if(db.alreadyPublished(bookAdded, publisherAdded) == False):
-            try:
-                db.addPublishedBy(bookAdded, publisherAdded, datePublished)
-            except:
-                msg = "This book already exists: publisher"
+        else:
+            db.makePublisherId(publisherAdded)
+        try:
+            db.addPublishedBy(bookAdded, publisherAdded, datePublished)
+        except:
+            print("in except")
+            msg = "This book already exists: publisher"
         msg = "Book Successfully Added"  
         return render_template("success.html",msg = msg)  
 

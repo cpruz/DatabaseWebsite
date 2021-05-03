@@ -94,7 +94,7 @@ class queries:
 
     def checkPublisher(publisher):
         cur = con.cursor()
-        cur.execute('Select count(*) FROM Publisher WHERE publisherId =:num', {"num": publisher.getPublisherId()})
+        cur.execute('Select count(*) FROM Publisher WHERE name =:pname AND address =:addr', {"pname": publisher.getName(), "addr": publisher.getAddress()})
         check = cur.fetchall()
         for c in check:
             valid = c[0]
@@ -148,8 +148,12 @@ class queries:
             return False
 
     def addPublishedBy(book, publisher, datePublished):
+        print("in add publishedby")
         cur = con.cursor()
         info = [book.getBookId(), publisher.getPublisherId(), datePublished]
+        print(book.getBookId())
+        print(publisher.getPublisherId())
+        print(datePublished)
         cur.execute('INSERT into PublishedBy (bookId, publisherId, datePublished) values (?,?,?)', info)
         con.commit()
 
