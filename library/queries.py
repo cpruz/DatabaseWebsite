@@ -196,7 +196,14 @@ class queries:
 
     def deleteBook(bookId):
         cur = con.cursor()
+        print(bookId)
         cur.execute("DELETE FROM Book WHERE bookId = ?",bookId)
+        con.commit()
+
+    def deleteMember(memberId):
+        cur = con.cursor()
+        print(memberId)
+        cur.execute("DELETE FROM Member WHERE memberId = ?",memberId)
         con.commit()
 
     def checkoutBook(bookId):

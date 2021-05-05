@@ -256,9 +256,10 @@ def deleterecord():
     if request.method == "POST":   
         bookId = request.form["bookId"]   
         try:  
+            print(bookId)
             db.deleteBook(bookId)
             msg = "Book successfully deleted" 
-        except:  
+        except:
             msg = "Book can't be deleted" 
     return render_template("delete_record.html",msg = msg)
 
@@ -269,6 +270,20 @@ def add_member():
 @app.route("/deletemember")  
 def delete_member():  
     return render_template("delete_member.html")
+
+@app.route("/deletememberpage",methods = ["POST", "GET"])  
+def deletememberpage():
+    db = queries.queries
+    db.connect()
+    if request.method == "POST":   
+        memberId = request.form["memberId"]   
+        try:  
+            print(memberId)
+            db.deleteMember(memberId)
+            msg = "Member successfully deleted" 
+        except:  
+            msg = "Member can't be deleted" 
+    return render_template("member_success.html",msg = msg)
 
 @app.route("/checkin")  
 def checkin():  

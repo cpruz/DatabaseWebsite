@@ -1,4 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Delete Member Page</h1>
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>delete member</title>  
+</head>  
+<body>  
+    <h3>Delete Member from Library</h3>  
+<form action="/deletememberpage" method="post">  
+<input type="text" name="memberId" class="form-control" placeholder="MemberId" aria-label="MemberId" aria-describedby="basic-addon1"> 
+<button class="btn btn-primary btn-lg btn-block" type="submit" value="Submit">Submit</button>
+</form>  
+<a href="/">Go back to home page</a>
+</body>  
+</html>
 {% endblock content %}
