@@ -1,11 +1,6 @@
 import os
 import secrets
 import sqlite3
-# import author
-# import book
-# import member
-# import publisher
-# import queries
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from library import app, author, book, member, publisher, queries
@@ -35,8 +30,6 @@ from library import app, author, book, member, publisher, queries
 # CONSTRAINT fk_member_borrowed FOREIGN KEY(memberId) REFERENCES Member(memberId) ON DELETE CASCADE)")  
 # print("Table created successfully")
 
-# 1. Add a README
-# 2. Add real data
 @app.route("/")
 @app.route("/home")
 def home():
